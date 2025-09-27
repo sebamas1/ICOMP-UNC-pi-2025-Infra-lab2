@@ -33,3 +33,25 @@ spec:
       targetPort: 8080 # Puerto del contenedor
       nodePort: 30081  # Puerto expuesto en los nodos (rango válido: 30000-32767)
   type: NodePort
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: tp1-backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: tp1-backend
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70   # escala si superan 70% de la memoria solicitada
+
