@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jmeter
+  namespace: jmeter
+spec:
+  template:
+    metadata:
+      name: jmeter
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: jmeter
+          image: justb4/jmeter:5.5
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              jmeter -n -t /tests/test-plan.jmx -JtargetUrl=http://tp1-backend-service.default:8080 -l /outputs/results.jtl; \
+              echo "✅ Test finalizado."
+          volumeMounts:
+            - name: testplan
+              mountPath: /tests
+              readOnly: true
+            - name: outputs
+              mountPath: /outputs
+      volumes:
+        - name: testplan
+          configMap:
+            name: jmeter-testplan
+        - name: outputs
+          emptyDir: {}
+  backoffLimit: 0

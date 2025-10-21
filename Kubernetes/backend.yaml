@@ -19,6 +19,13 @@ spec:
           image: public.ecr.aws/b4c0c6w7/tesis/tp1-backend:715e2b814a3e2377c8030c1452161ebfc81b149b
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -46,12 +53,13 @@ spec:
     kind: Deployment
     name: tp1-backend
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 20
   metrics:
     - type: Resource
       resource:
-        name: memory
+        name: cpu
         target:
           type: Utilization
-          averageUtilization: 70   # escala si superan 70% de la memoria solicitada
+          averageUtilization: 70   # del request
+
 
