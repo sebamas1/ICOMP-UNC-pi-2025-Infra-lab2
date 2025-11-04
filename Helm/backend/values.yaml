@@ -1,0 +1,28 @@
+replicaCount: 1
+
+image:
+  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-backend
+  tag: 715e2b814a3e2377c8030c1452161ebfc81b149b
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  type: NodePort
+  port: 8080
+  targetPort: 8080
+  nodePort: 30081
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70

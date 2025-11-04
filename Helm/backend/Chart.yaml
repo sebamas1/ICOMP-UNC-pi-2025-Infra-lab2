@@ -1,0 +1,6 @@
+apiVersion: v2
+name: tp1-backend
+description: Helm chart for tp1-backend deployment
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

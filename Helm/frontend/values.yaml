@@ -1,0 +1,19 @@
+replicaCount: 1
+
+image:
+  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-frontend
+  tag: 388912dae2882d49ab3725d3ef0ea110a3e7e192
+  pullPolicy: IfNotPresent
+
+containerPort: 3000
+
+env:
+  VITE_API_BASE_URL: "http://192.168.49.2:30081"
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 3000
+  nodePort: 30080
+
+resources: {}
