@@ -21,7 +21,9 @@ spec:
           ports:
             - containerPort: {{ .Values.containerPort }}
           env:
-            - name: VITE_API_BASE_URL
-              value: "{{ .Values.env.VITE_API_BASE_URL }}"
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

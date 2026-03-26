@@ -1,5 +1,3 @@
-# Por entorno: ../dev/frontend.yaml y ../prd/frontend.yaml
-# Paths: /api antes que / (mismo Ingress, sin rewrite: el backend recibe /api/...).
 replicaCount: 1
 
 image:
@@ -10,9 +8,6 @@ image:
 containerPort: 3000
 
 env:
-  # Runtime: el entrypoint del contenedor reemplaza __API_BASE_URL__ en config.js.
-  # "" = mismo origen (Ingress app.local: el navegador pide /api/... al mismo host).
-  # Omitir en docker run local para default http://localhost:8080.
   VITE_API_BASE_URL: ""
 
 service:

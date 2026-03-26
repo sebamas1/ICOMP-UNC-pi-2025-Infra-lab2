@@ -1,8 +1,8 @@
-# Por entorno: ../dev/backend.yaml y ../prd/backend.yaml
-replicaCount: 1
+# Producción — sin Ingress propio
+replicaCount: 2
 
 image:
-  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-backend
+  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-backend-prd
   tag: latest
   pullPolicy: Always
 
@@ -10,22 +10,22 @@ containerPort: 8080
 
 resources:
   requests:
-    cpu: 200m
-    memory: 256Mi
-  limits:
     cpu: 500m
     memory: 512Mi
+  limits:
+    cpu: 2000m
+    memory: 1Gi
 
 service:
   type: ClusterIP
   port: 8080
   targetPort: 8080
- 
+
 ingress:
   enabled: false
 
 autoscaling:
   enabled: true
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 20
   targetCPUUtilizationPercentage: 70
