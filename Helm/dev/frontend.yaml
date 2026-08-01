@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-frontend
+  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-frontend-dev
   tag: latest
   pullPolicy: Always
 
@@ -17,10 +17,12 @@ service:
 
 ingress:
   enabled: true
-  className: nginx
-  annotations: {}
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
   hosts:
-    - host: app.local
+    - host: ""
       paths:
         - path: /api
           pathType: Prefix

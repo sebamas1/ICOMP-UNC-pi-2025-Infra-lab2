@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: tp1-frontend
-          image: public.ecr.aws/b4c0c6w7/tesis/tp1-frontend:388912dae2882d49ab3725d3ef0ea110a3e7e192
+          image: public.ecr.aws/b4c0c6w7/tesis/tp1-frontend-dev:388912dae2882d49ab3725d3ef0ea110a3e7e192
           ports:
             - containerPort: 3000
           env:
