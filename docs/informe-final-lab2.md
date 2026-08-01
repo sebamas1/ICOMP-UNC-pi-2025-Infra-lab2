@@ -27,7 +27,7 @@ Desplegar la aplicación Device Manager (backend .NET y frontend React, imágene
 | Métricas | metrics-server | CPU de Pods para HPA y `kubectl top` |
 | Autoscaling | HPA (autoscaling/v2) | Escala réplicas del backend por CPU (target 70 %) |
 | Exposición HTTP | Ingress (nginx) | Host `app.local`, rutas `/` y `/api` |
-| Registro | Amazon ECR | Imágenes del Lab 1 (`tp1-backend`, `tp1-frontend`, `tp1-backend-prd`) |
+| Registro | Amazon ECR | Imágenes del Lab 1 (`tp1-backend`, `tp1-frontend`); tags `dev`/`prd` por ambiente |
 | Pruebas de carga | Apache JMeter 5.5/5.6 | Imagen `justb4/jmeter`; plan en ConfigMap |
 | CLI | kubectl, helm | Aplicación de manifiestos e instalación de releases |
 
@@ -142,7 +142,7 @@ minikube service tp1-frontend-service --url
 **Overrides por entorno:**
 
 - `Helm/dev/backend.yaml` y `Helm/dev/frontend.yaml`: imágenes de integración (`tp1-backend`, `tp1-frontend`), recursos moderados, Ingress activo en frontend.
-- `Helm/prd/backend.yaml` y `Helm/prd/frontend.yaml`: imagen `tp1-backend-prd`, más CPU/memoria, `replicaCount` base 2, mismos parámetros de HPA.
+- `Helm/prd/backend.yaml` y `Helm/prd/frontend.yaml`: tag `prd` del repo ECR compartido, más CPU/memoria, `replicaCount` base 2, mismos parámetros de HPA.
 
 **Pasos de instalación:**
 
@@ -311,7 +311,7 @@ kubectl logs -n jmeter job/jmeter
 | **Request CPU 200m** | Valor bajo hace que el porcentaje de HPA suba rápido bajo carga, haciendo visible el escalado en tiempo de laboratorio. |
 | **Job en lugar de Pod suelto para JMeter** | Semántica de “trabajo terminable”, reintentos controlados (`backoffLimit: 0`) y mejor alineación con buenas prácticas Kubernetes. |
 | **Namespace `jmeter` aislado** | Separación de la carga de prueba de los workloads de la aplicación. |
-| **Imágenes dev vs prd en Helm** | `tp1-backend` vs `tp1-backend-prd` continúan la estrategia del Lab 1 (integración vs producción en ECR). |
+| **Imágenes dev vs prd en Helm** | Un único repo ECR por componente; tag `dev` para integración y `prd` para producción. Permite promover la misma imagen sin rebuild. |
 
 ---
 
