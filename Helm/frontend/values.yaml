@@ -3,8 +3,8 @@
 replicaCount: 1
 
 image:
-  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-frontend-dev
-  tag: latest
+  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-frontend
+  tag: dev
   pullPolicy: Always
 
 containerPort: 3000

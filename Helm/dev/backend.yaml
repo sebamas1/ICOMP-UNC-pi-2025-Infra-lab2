@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-backend-dev
-  tag: latest
+  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-backend
+  tag: dev
   pullPolicy: Always
 
 containerPort: 8080
