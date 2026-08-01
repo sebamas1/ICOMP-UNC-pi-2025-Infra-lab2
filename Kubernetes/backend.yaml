@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: tp1-backend
-          image: public.ecr.aws/b4c0c6w7/tesis/tp1-backend:715e2b814a3e2377c8030c1452161ebfc81b149b
+          image: public.ecr.aws/b4c0c6w7/tesis/tp1-backend-dev:715e2b814a3e2377c8030c1452161ebfc81b149b
           ports:
             - containerPort: 8080
           resources:

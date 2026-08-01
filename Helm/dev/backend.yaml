@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-backend
+  repository: public.ecr.aws/b4c0c6w7/tesis/tp1-backend-dev
   tag: latest
   pullPolicy: Always
 
