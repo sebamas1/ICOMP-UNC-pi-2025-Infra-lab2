@@ -9,7 +9,8 @@ spec:
   selector:
     app: {{ include "tp1-backend.name" . }}
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
       {{- if eq .Values.service.type "NodePort" }}
