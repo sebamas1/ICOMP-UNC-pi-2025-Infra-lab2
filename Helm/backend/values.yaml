@@ -8,6 +8,30 @@ image:
 
 containerPort: 8080
 
+env:
+  # 0 = deshabilitado. Para el demo de canary/rollback (Lab 5), overridear puntualmente
+  # en la versión "canary" con --set env.FaultInjection__ErrorRate=0.3 (o similar).
+  FaultInjection__ErrorRate: "0"
+
+# Requiere el Prometheus Operator (kube-prometheus-stack, módulo "monitoring" de lab4)
+# instalado en el clúster — si no existe el CRD ServiceMonitor, poner enabled: false.
+metrics:
+  enabled: true
+  path: /metrics
+  interval: 15s
+
+# Requiere el controller de Argo Rollouts (módulo "argo-rollouts" de lab4) instalado en
+# el clúster, además de metrics.enabled: true (el AnalysisTemplate depende del ServiceMonitor).
+canary:
+  stepPauseDuration: 2m
+  analysisEnabled: true
+  analysisStartingStep: 1
+  analysisInterval: 1m
+  analysisFailureLimit: 1
+  errorRateThreshold: "0.05"
+  # Service de kube-prometheus-stack (módulo "monitoring" de lab4), namespace "monitoring".
+  prometheusAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+
 resources:
   requests:
     cpu: 200m

@@ -1,0 +1,22 @@
+{{- if .Values.canary.analysisEnabled -}}
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: {{ include "tp1-backend.fullname" . }}-error-rate
+spec:
+  metrics:
+    - name: error-rate
+      interval: {{ .Values.canary.analysisInterval }}
+      # Menos de N% de requests 5xx en la ventana => step OK, sigue subiendo el peso.
+      # Si falla "failureLimit" veces seguidas, Argo Rollouts aborta y hace rollback
+      # automático a la versión estable, sin intervención manual.
+      successCondition: result[0] < {{ .Values.canary.errorRateThreshold }}
+      failureLimit: {{ .Values.canary.analysisFailureLimit }}
+      provider:
+        prometheus:
+          address: {{ .Values.canary.prometheusAddress }}
+          query: |
+            sum(rate(http_requests_received_total{service="{{ include "tp1-backend.fullname" . }}-service", code=~"5.."}[2m]))
+            /
+            sum(rate(http_requests_received_total{service="{{ include "tp1-backend.fullname" . }}-service"}[2m]))
+{{- end }}

@@ -18,8 +18,10 @@ service:
 
 ingress:
   enabled: true
-  className: nginx
-  annotations: {}
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
   hosts:
     - host: app.example.com
       paths:

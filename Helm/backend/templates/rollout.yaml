@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "tp1-backend.fullname" . }}
+  labels:
+    app: {{ include "tp1-backend.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: {{ include "tp1-backend.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "tp1-backend.name" . }}
+    spec:
+      containers:
+        - name: {{ include "tp1-backend.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+  strategy:
+    # Canary básico: Argo Rollouts aproxima cada setWeight ajustando la proporción de
+    # réplicas viejas/nuevas (no reparte tráfico exacto vía Ingress/ALB). No requiere
+    # tocar el Ingress del frontend ni Services adicionales.
+    canary:
+      {{- if .Values.canary.analysisEnabled }}
+      analysis:
+        templates:
+          - templateName: {{ include "tp1-backend.fullname" . }}-error-rate
+        startingStep: {{ .Values.canary.analysisStartingStep }}
+      {{- end }}
+      steps:
+        - setWeight: 20
+        - pause:
+            duration: {{ .Values.canary.stepPauseDuration }}
+        - setWeight: 50
+        - pause:
+            duration: {{ .Values.canary.stepPauseDuration }}
+        - setWeight: 100
