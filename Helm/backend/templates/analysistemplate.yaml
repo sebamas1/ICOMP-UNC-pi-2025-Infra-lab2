@@ -16,7 +16,13 @@ spec:
         prometheus:
           address: {{ .Values.canary.prometheusAddress }}
           query: |
-            sum(rate(http_requests_received_total{service="{{ include "tp1-backend.fullname" . }}-service", code=~"5.."}[2m]))
+            (
+              sum(rate(http_requests_received_total{service="{{ include "tp1-backend.fullname" . }}-service", code=~"5.."}[2m]))
+              or vector(0)
+            )
             /
-            sum(rate(http_requests_received_total{service="{{ include "tp1-backend.fullname" . }}-service"}[2m]))
+            (
+              sum(rate(http_requests_received_total{service="{{ include "tp1-backend.fullname" . }}-service"}[2m]))
+              or vector(1)
+            )
 {{- end }}
