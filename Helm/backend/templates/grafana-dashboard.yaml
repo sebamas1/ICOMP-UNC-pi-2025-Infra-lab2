@@ -1,0 +1,75 @@
+{{- if .Values.metrics.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tp1-backend.fullname" . }}-canary-dashboard
+  labels:
+    app: {{ include "tp1-backend.name" . }}
+    grafana_dashboard: "1"
+data:
+  tp1-backend-canary.json: |
+    {
+      "title": "tp1-backend - Canary / Error Rate",
+      "uid": "tp1-backend-canary",
+      "timezone": "browser",
+      "refresh": "10s",
+      "time": { "from": "now-30m", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "title": "Error rate (5xx / total) - misma query que el AnalysisTemplate",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "red", "value": {{ .Values.canary.errorRateThreshold }} }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "expr": "(sum(rate(http_requests_received_total{service=\"{{ include "tp1-backend.fullname" . }}-service\", code=~\"5..\"}[2m])) or vector(0)) / (sum(rate(http_requests_received_total{service=\"{{ include "tp1-backend.fullname" . }}-service\"}[2m])) or vector(1))",
+              "legendFormat": "error rate",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Request rate por status code",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "sum(rate(http_requests_received_total{service=\"{{ include "tp1-backend.fullname" . }}-service\"}[2m])) by (code)",
+              "legendFormat": "{{ "{{code}}" }}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Pods por revision (rollouts-pod-template-hash)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "count(kube_pod_info{namespace=\"{{ .Release.Namespace }}\", pod=~\"{{ include "tp1-backend.fullname" . }}-.*\"}) by (pod)",
+              "legendFormat": "{{ "{{pod}}" }}",
+              "refId": "A"
+            }
+          ]
+        }
+      ],
+      "schemaVersion": 39
+    }
+{{- end }}
